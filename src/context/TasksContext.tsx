@@ -13,6 +13,7 @@ interface TasksContextValue {
   updateTask: (id: string, patch: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   undoDelete: () => void;
+  clearLastDeleted: () => void;  // Added clearLastDeleted to context value (wrt bug 2)
 }
 
 const TasksContext = createContext<TasksContextValue | undefined>(undefined);
