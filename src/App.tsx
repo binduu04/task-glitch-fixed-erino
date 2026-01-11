@@ -1,4 +1,4 @@
-import { Alert, Avatar, Box, Button, CircularProgress, Container, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Avatar, Box, Button, CircularProgress, Container, MenuItem, Select, Snackbar, Stack, TextField, Typography } from '@mui/material';
 import MetricsBar from '@/components/MetricsBar';
 import TaskTable from '@/components/TaskTable';
 import UndoSnackbar from '@/components/UndoSnackbar';
@@ -26,6 +26,7 @@ function AppContent() {
   const [q, setQ] = useState('');
   const [fStatus, setFStatus] = useState<string>('All');
   const [fPriority, setFPriority] = useState<string>('All');
+  const [showAddSuccess, setShowAddSuccess] = useState(false);
   const { user } = useUser();
   const [activity, setActivity] = useState<ActivityItem[]>([]);
   const createActivity = useCallback((type: ActivityItem['type'], summary: string): ActivityItem => ({
@@ -47,6 +48,7 @@ function AppContent() {
   const handleAdd = useCallback((payload: Omit<Task, 'id'>) => {
     addTask(payload);
     setActivity(prev => [createActivity('add', `Added: ${payload.title}`), ...prev].slice(0, 50));
+    setShowAddSuccess(true);
   }, [addTask, createActivity]);
   const handleUpdate = useCallback((id: string, patch: Partial<Task>) => {
     updateTask(id, patch);
@@ -128,8 +130,15 @@ function AppContent() {
           {!loading && !error && <ChartsDashboard tasks={filtered} />}
           {!loading && !error && <AnalyticsDashboard tasks={filtered} />}
           {!loading && !error && <ActivityLog items={activity} />}
-          <UndoSnackbar open={!!lastDeleted} onClose={handleCloseUndo} onUndo={handleUndo} />
-         </Stack>
+          <UndoSnackbar open={!!lastDeleted} onClose={handleCloseUndo} onUndo={handleUndo} />    
+          <Snackbar
+            open={showAddSuccess}
+            onClose={() => setShowAddSuccess(false)}
+            autoHideDuration={4000}
+            message="Task added successfully"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          />        
+          </Stack>
       </Container>
     </Box>
   );
