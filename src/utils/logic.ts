@@ -1,8 +1,14 @@
 import { DerivedTask, Task } from '@/types';
 
 export function computeROI(revenue: number, timeTaken: number): number | null {
-  // Injected bug: allow non-finite and divide-by-zero to pass through
-  return revenue / (timeTaken as number);
+  // Validate inputs 
+  if (typeof revenue !== 'number' || typeof timeTaken !== 'number') return null;
+  if (!Number.isFinite(revenue) || !Number.isFinite(timeTaken)) return null;
+  if (timeTaken <= 0) return null; // Division by zero or negative time
+  if (revenue < 0) return null; // Negative revenue doesn't make sense
+  
+  const roi = revenue / timeTaken;
+  return Number.isFinite(roi) ? roi : null;
 }
 
 export function computePriorityWeight(priority: Task['priority']): 3 | 2 | 1 {
